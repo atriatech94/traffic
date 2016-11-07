@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'self'; style-src 'self' 'unsafe-inline'; media-src *">
+    <script src="components/loader.js"></script>
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="lib/onsenui/js/onsenui.min.js"></script>
+    <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
+    <script src="lib/controller/controller.js"></script>
+    <script>var base_url = "http://traffic-ac.ir/app/";</script>
+    <script>var img_url = "http://traffic-ac.ir/uploads/";</script>
+
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
+    <link rel="stylesheet" href="css/style.css">
+   
+</head>
+<body>
+    <ons-navigator var="myNavigator" page="page1.html"></ons-navigator>
+    <ons-template id="page1.html" class="login_page"> 
+      <ons-page modifier="thick" ng-controller="LoginController as page" ng-init="page.show_case = '1' ">
+          
+          <div class="register_form" ng-if="page.show_case == '1' ">
+              <input type="text" style="display:none">
+              <input type="password" style="display:none">
+              <p><ons-input id="username" modifier="underbar" placeholder="نام و نام خانوادگی" float ng-model="page.username"></ons-input></p>
+              <p><ons-input id="code" modifier="underbar" type="number" placeholder="کد ملی" float ng-model="page.code"></ons-input></p>
+              <p><ons-input id="school" modifier="underbar" type="text" placeholder="نام مدرسه" float ng-model="page.school"></ons-input></p>
+             <p>
+                  <select class="select-option" ng-model="page.gender">
+                      <option value="">جنسیت</option>
+                      <option value="1">پسر</option>
+                      <option value="2">دختر</option>
+                   </select>
+              </p>
+             
+              <p>
+                  <select class="select-option" ng-model="page.grade">
+                      <option value="">مقطع تحصیلی</option>
+                      <option value="1">دبستان</option>
+                      <option value="2">متوسطه اول (راهنمایی)</option>
+                      <option value="3">متوسطه دوم (دبیرستان)</option>
+                  </select>
+              </p>
+              <p>
+                  <select class="select-option" ng-model="page.area">
+                      <option value="">ناحیه آموزش و پرورش</option>
+                      <option value="1">ناحیه 1</option>
+                      <option value="2">ناحیه 2</option>
+                      <option value="3">ناحیه 3</option>
+                      <option value="4">ناحیه 4</option>
+                  </select>
+              </p>
+              <p><ons-input id="tel" modifier="underbar" type="text" placeholder="تلفن ثابت" float ng-model="page.phone"></ons-input></p>
+              <p><ons-input id="mobile" modifier="underbar" type="number" placeholder="تلفن همراه" float ng-model="page.mobile"></ons-input></p>
+              <p><ons-input id="std_num" modifier="underbar" type="text" placeholder="شماره دانش آموزی" float ng-model="page.std_num"></ons-input></p>
+              <p><ons-button  ng-click="page.submit()" >ثبت نام</ons-button></p>
+              <p class="registering">قبلا ثبت نام کرده ام |<a href="" ng-click="page.show_case = '2'"  >ورود</a></p>
+          </div>
+          <div class="login_form register_form" ng-if="page.show_case == '2'" >
+              <p><ons-input id="shomaremeli" modifier="underbar" placeholder="شماره ملی"  ng-model="page.code_meli" type="number" ></ons-input></p>
+              <p ><ons-button ng-click="page.login_1()">ورود</ons-button></p>
+              <p class="registering">هنوز ثبت نام نکرده ام | <a href="" ng-click="page.show_case = '1'" >ثبت نام </a> </p>
+              
+          </div>
+      </ons-page>
+    </ons-template>
+<!--===============================================================================================================-->
+    <ons-template id="page2.html">
+        <ons-page  ng-controller="SelectController as select">
+            <ons-toolbar>
+                <div class="center">{{select.exam[0].name}}</div>
+            </ons-toolbar>
+            <div class="select_exam">
+                <img class="exam_image" ng-src="{{select.img}}" >
+                <div class="exam_data">
+                    <h4>{{select.exam[0].name}}</h4>
+                    <div class="exam_info">
+                        <div class="exam_time"><i class="fa fa-calendar"></i>شروع آزمون از {{select.exam[0].start_date}} ساعت {{select.exam[0].start_time}} الی {{select.exam[0].end_date}} ساعت {{select.exam[0].end_time}} </div>
+                        <div class="exam_split_time "><i class="fa fa-clock-o "></i>مدت آزمون {{select.exam[0].duration}} دقیقه</div>
+                        <div class="exam_uestion_count "><i class="fa fa-check-square-o"></i>{{select.exam[0].questions}} سوال 4 گزینه ای</div>
+                        <div class="exam_uestion_count c1">توضیح : </div>
+                    </div>
+                    <div ng-if="select.exam[0].ended!=1" class="exam_info_text" data-ng-bind-html="select.description"></div>
+                    <div ng-if="select.exam[0].ended==1" class="exam_info_text color-red">شما در این آزمون شرکت کرده اید !!!</div>
+                    <div class="center-btn">
+                        <ons-button ng-if="select.exam[0].ended!=1"  ng-click="myNavigator.pushPage('page3.html', {data: {title: 'Page 3'}})">مطالعه مطالب آموزشی و شرکت در آزمون<ons-icon icon="ion-chevron-left"></ons-icon> </ons-button>
+                        <ons-button class="btn-color-red log-out" ng-if="select.exam[0].ended==1" ng-click="select.logout()">خروج از حساب کاربری<ons-icon icon="ion-power"></ons-icon> </ons-button>
+                    </div>
+                </div>
+            </div>
+        </ons-page>
+    </ons-template>
+<!--===============================================================================================================-->    
+    <ons-template id="page3.html">
+      <ons-page ng-controller="ArticleController as article">
+          <ons-if platform="android">
+              <ons-toolbar >
+                  <!--- android -->
+                  <div class="left">
+                      <ons-toolbar-button ng-click="carousel.next()">
+                          <ons-icon icon="md-chevron-right"></ons-icon>
+                      </ons-toolbar-button>
+                  </div>
+                  <div class="center">آموزش های قبل از آزمون
+                  
+                  </div>
+                  <div class="right">
+                      <ons-toolbar-button ng-click="carousel.prev()">
+                          <ons-icon icon="md-chevron-left"></ons-icon>
+                      </ons-toolbar-button>
+                  </div>
+
+             </ons-toolbar>
+          </ons-if>
+              <!--- ios -->
+          <ons-if platform="ios">
+              <ons-toolbar>
+
+                      <div class="left">
+                          <ons-toolbar-button ng-click="carousel.prev()">
+                              <ons-icon icon="md-chevron-left"></ons-icon>
+                          </ons-toolbar-button>
+                      </div>
+                      <div class="center">آموزش های قبل از آزمون</div>
+                      <div class="right">
+                          <ons-toolbar-button ng-click="carousel.next()">
+                              <ons-icon icon="md-chevron-right"></ons-icon>
+                          </ons-toolbar-button>
+                      </div>
+
+              </ons-toolbar>
+          </ons-if>
+          
+          <ons-carousel var="carousel" ons-postchange="k = $event.activeIndex" fullscreen swipeable auto-scroll auto-refresh overscrollable>
+              <ons-carousel-item ng-repeat="itemse in article.articles">
+                  <div class="select_exam" >
+                       <div class="exam_data">
+                            <div class="exam_info_text" data-ng-bind-html="itemse.description">
+                            </div>
+                            <div class="center lrn_btn">
+                                <ons-button class="lrn_right" ng-if="k != article.articles.length-1" ng-click="carousel.next()">  <ons-icon icon="ion-chevron-right"></ons-icon> آموزش بعد </ons-button>
+                                <ons-button class="lrn_left" ng-if="k != article.articles.length-1" ng-click="carousel.prev()">   آموزش قبل <ons-icon icon="ion-chevron-left"></ons-icon>  </ons-button>
+                               
+                            </div>
+                           <div class="center start_exam">
+                               <ons-button class="lrn_right" ng-if="k == article.articles.length-1 && finished == 0" ng-click="article.exam_start()">   شروع آزمون <i class="fa-play fa fa-flip-horizontal "></i> </ons-button>
+                               <ons-button class="lrn_right log-out" ng-if="k == article.articles.length-1 && finished == 1" ng-click="article.logout()"> خروج از حساب کاربری <ons-icon icon="ion-power"></ons-icon> </ons-button>
+                           </div>
+                      </div>
+                  </div>
+              </ons-carousel-item>
+           </ons-carousel>
+        </ons-page>
+    </ons-template>
+ <!--===============================================================================================================--> 
+    <ons-template id="page4.html">
+        <ons-page ng-controller="ExamController as exam">
+            <ons-if platform="ios">
+              <ons-toolbar>
+                <div class="left">
+                  <ons-toolbar-button ng-click="carouselexam.prev()">
+                    <ons-icon icon="md-chevron-left"></ons-icon>
+                  </ons-toolbar-button>
+                </div>
+                <div class="center">زمان باقی مانده : <span id="countdown"></span></div>
+                <div class="right">
+                  <ons-toolbar-button ng-click="carouselexam.next()">
+                    <ons-icon icon="md-chevron-right"></ons-icon>
+                  </ons-toolbar-button>
+                </div>
+              </ons-toolbar>
+            </ons-if>
+             <ons-if platform="android">
+              <ons-toolbar>
+                <div class="left">
+                  <ons-toolbar-button ng-click="carouselexam.next()">
+                    <ons-icon icon="md-chevron-right"></ons-icon>
+                  </ons-toolbar-button>
+                </div>
+                <div class="center">زمان باقی مانده : <span id="countdown"></span></div>
+                <div class="right">
+                  <ons-toolbar-button ng-click="carouselexam.prev()">
+                    <ons-icon icon="md-chevron-left"></ons-icon>
+                  </ons-toolbar-button>
+                </div>
+              </ons-toolbar>
+            </ons-if>
+            <ons-carousel var="carouselexam" auto-refresh ons-postchange="k = $event.activeIndex" fullscreen swipeable auto-scroll overscrollable>
+               <!--======================================-->
+                
+                <!--======================================-->
+                <ons-carousel-item ng-repeat="item in exam.questions" >
+                    <div class="exam-itam">
+                        <h3>{{item.question}}
+                            <img ng-if="item.picname != ''" ng-src="{{exam.img_q + item.picname}}" class="answer_image">
+                        </h3>
+                        <div class="answer">
+                            
+                            <ons-list-item tappable ng-repeat="answer in item.answers">
+                                <label class="left"><ons-input ng-click="exam.get_answer(answer[2],item.id)" name="ans_{{item.id}}" type="radio" ng-checked="exam.ans.indexOf(answer[2]) != -1" input-id="radio-{{answer[2]}}"></ons-input></label>
+                                <label for="radio-{{answer[2]}}" class="center font-size-14"> <img ng-if="answer[1] != ''" ng-src="{{exam.img_a + answer[1]}}" class="question_image"> {{answer[0]}}</label>
+                            </ons-list-item>
+                           
+                        </div>
+                        <div class="exam_nav_btn">
+                            <ons-button modifier="next-btn" ng-if="k != exam.questions.length-1" ng-click="carouselexam.next()"><ons-icon icon="ion-chevron-right"></ons-icon> سوال بعد </ons-button>
+                            <ons-button style="background: #c51414;" modifier="next-btn" ng-if="k == exam.questions.length-1" ng-click="exam.finish()"><ons-icon icon="ion-checkmark-round" size="20px"></ons-icon> پایان آزمون </ons-button>
+                            <ons-button ng-if="carouselexam.getActiveIndex() != 0" modifier="prev-btn" ng-click="carouselexam.prev()"> سوال قبل <ons-icon icon="ion-chevron-left"></ons-icon></ons-button>
+                         </div>
+                    </div>
+                </ons-carousel-item>
+                <!--======================================-->
+            </ons-carousel>
+        </ons-page>
+    </ons-template>
+	<ons-template id="page5.html">
+	   <ons-page ng-controller="FinishController as finish">	
+        <ons-toolbar>
+			<div class="center" style="text-align:center">پایان آزمون</div>
+		</ons-toolbar>
+		<div class="err">
+			<p class="color-green"><i class="fa fa-check" aria-hidden="true"></i></p>
+			<p>آزمون به پایان رسید !!</p>
+            <ons-button ng-click="finish.logout()">خروج از حساب کاربری</ons-button>
+		</div>
+	   </ons-page>  
+	</ons-template>
+    <ons-template id="page6.html">
+		<ons-toolbar>
+			<div class="center" style="text-align:center">جام قهرمان ترافیک</div>
+		</ons-toolbar>
+		<div class="err">
+			<p class="color-red"><i class="fa fa-exclamation" aria-hidden="true"></i></p>
+			<p>آزمون فعالی وجود ندارد</p>
+        </div>
+	</ons-template>
+    <ons-template id="page7.html">
+	   <ons-page ng-controller="ErrorController as Error">	
+        <ons-toolbar>
+			<div class="center" style="text-align:center">پایان زمان آزمون</div>
+		</ons-toolbar>
+		<div class="err">
+			<p class="color-red"><i class="fa fa-exclamation" aria-hidden="true"></i></p>
+			<p style="margin-bottom:-15px;"> خطا در برقراری ارتباط</p>
+            <h6 style="text-align:center;">زمان شما به پایان رسید ولی پاسخ های شما ثبت نشد اتصال به اینترنت خود را چک کنید و مجددا تلاش کنید</h6>
+            <ons-button ng-click="Error.logout()">تلاش مجدد</ons-button>
+            
+		</div>
+	  </ons-page>
+	</ons-template>
+    <div id="loading" style="display:none;"><ons-progress-circular indeterminate></ons-progress-circular></div>
+ <!--===============================================================================================================-->   
+ <!--===============================================================================================================-->   
+</body>
+</html>
