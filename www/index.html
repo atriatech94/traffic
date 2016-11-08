@@ -11,7 +11,6 @@
     <script src="lib/controller/controller.js"></script>
     <script>var base_url = "http://traffic-ac.ir/app/";</script>
     <script>var img_url = "http://traffic-ac.ir/uploads/";</script>
-
     <link rel="stylesheet" href="components/loader.css">
     <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
     <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
@@ -19,7 +18,20 @@
    
 </head>
 <body>
-    <ons-navigator var="myNavigator" page="page1.html"></ons-navigator>
+    <ons-navigator var="myNavigator" page="page0.html"></ons-navigator>
+	 <ons-template id="page0.html">
+		<ons-page ng-controller="LandingController as landing" >
+            <div id="intro_page">
+                <div class="logo"></div>
+                <h3 class="delay1">جام قهرمان ترافیک</h3>
+                <h4 class="delay2">سامانه آموزش فرهنگ ترافیک</h4>
+				<ons-button ng-click="landing.go()">شرکت در مسابقه</ons-button>
+                <h5 class="delay3">شماره پشتیبانی : 0713235989</h5>
+                <h5 class="delay4">پست الکترونیکی : info@traffic-ac.ir</h5>
+                <h5 class="power">طراحی و اجرا توسط <span>آتریاتک</span></h5>
+            </div>
+        </ons-page>
+	</ons-template>
     <ons-template id="page1.html" class="login_page"> 
       <ons-page modifier="thick" ng-controller="LoginController as page" ng-init="page.show_case = '1' ">
           
@@ -54,7 +66,7 @@
                       <option value="4">ناحیه 4</option>
                   </select>
               </p>
-              <p><ons-input id="tel" modifier="underbar" type="text" placeholder="تلفن ثابت" float ng-model="page.phone"></ons-input></p>
+              <p><ons-input id="tel" modifier="underbar" type="number" placeholder="تلفن ثابت" float ng-model="page.phone"></ons-input></p>
               <p><ons-input id="mobile" modifier="underbar" type="number" placeholder="تلفن همراه" float ng-model="page.mobile"></ons-input></p>
               <p><ons-input id="std_num" modifier="underbar" type="text" placeholder="شماره دانش آموزی" float ng-model="page.std_num"></ons-input></p>
               <p><ons-button  ng-click="page.submit()" >ثبت نام</ons-button></p>
@@ -230,13 +242,16 @@
 	   </ons-page>  
 	</ons-template>
     <ons-template id="page6.html">
+       <ons-page ng-controller="NoexamController as noexam">	  
 		<ons-toolbar>
 			<div class="center" style="text-align:center">جام قهرمان ترافیک</div>
 		</ons-toolbar>
 		<div class="err">
 			<p class="color-red"><i class="fa fa-exclamation" aria-hidden="true"></i></p>
 			<p>آزمون فعالی وجود ندارد</p>
+            <ons-button ng-click="noexam.logout()">خروج از حساب کاربری</ons-button>
         </div>
+       </ons-page>  
 	</ons-template>
     <ons-template id="page7.html">
 	   <ons-page ng-controller="ErrorController as Error">	

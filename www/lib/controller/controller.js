@@ -3,7 +3,7 @@
      $timeout(function(){
          myNavigator.pushPage('page2.html', {data: {title: 'Page 2'}});
       },50); 
-     return false;
+       return false;
      }  
     this.username = "";
     this.code = "";
@@ -57,12 +57,19 @@
                             }
                             else if(response.data.done == 1)
                             {
+                                if(response.data.exam == 0){
+                                    myNavigator.pushPage('page6.html', {data: {title: 'Page 6'}});
+                                }
+                                else
+                                {
                                    localStorage.setItem('user_id',response.data.user_id);
                                    localStorage.setItem('name',response.data.name);
                                    localStorage.setItem('code',response.data.code);
                                    localStorage.setItem('exam',JSON.stringify(response.data.exam));
                                    localStorage.setItem('articles',JSON.stringify(response.data.articles));
                                    myNavigator.pushPage('page2.html', {data: {title: 'Page 2'}});
+                                }
+                                   
                             }
                             else
                             {
@@ -203,12 +210,19 @@
                             }
                             else if(response.data.done == 1)
                             {
-                                   localStorage.setItem('user_id',response.data.user_id);
-                                   localStorage.setItem('name',response.data.name);
-                                   localStorage.setItem('code',response.data.code);
-                                   localStorage.setItem('exam',JSON.stringify(response.data.exam));
-                                   localStorage.setItem('articles',JSON.stringify(response.data.articles));
-                                   myNavigator.pushPage('page2.html', {data: {title: 'Page 2'}});
+                                  if(response.data.exam == 0){
+                                      myNavigator.pushPage('page6.html', {data: {title: 'Page 6'}});
+                                  }
+                                  else
+                                  {
+                                     localStorage.setItem('user_id',response.data.user_id);
+                                     localStorage.setItem('name',response.data.name);
+                                     localStorage.setItem('code',response.data.code);
+                                     localStorage.setItem('exam',JSON.stringify(response.data.exam));
+                                     localStorage.setItem('articles',JSON.stringify(response.data.articles));
+                                     myNavigator.pushPage('page2.html', {data: {title: 'Page 2'}});
+                                  }
+                                   
                             }
                             else
                             {
@@ -236,13 +250,31 @@
       
  })
 
+ .controller('LandingController', function() {
+     if(localStorage.getItem('logout') != null){
+        location.reload();
+        localStorage.clear();
+        return false;
+    }
+      this.go = function(){
+      if(localStorage.getItem('user_id') != null){
+            myNavigator.pushPage('page2.html', {data: {title: 'Page 2'}});
+      } 
+     else
+      {
+         myNavigator.pushPage('page1.html', {data: {title: 'Page 1'}});
+      } 
+          
+     };
+})
+
  .controller('SelectController', function($sce) { 
        this.exam = JSON.parse(localStorage.getItem('exam'));
        this.description = $sce.trustAsHtml(this.exam[0].description);
        this.img = img_url+'exam/'+this.exam[0].picname;
        this.logout = function(){
            localStorage.clear();
-           myNavigator.pushPage('page1.html', {data: {title: 'Page 1'}});
+           myNavigator.pushPage('page0.html', {data: {title: 'Page 0'}});
        };
    })
 
@@ -306,7 +338,7 @@
 
         this.logout = function(){
            localStorage.clear();
-           myNavigator.pushPage('page1.html', {data: {title: 'Page 1'}});
+           myNavigator.pushPage('page0.html', {data: {title: 'Page 0'}});
        };
 
    })
@@ -327,7 +359,8 @@
          }
          
          this.questions = JSON.parse(localStorage.getItem('questions'));
-         this.remain = localStorage.getItem('remain');
+         var remain = localStorage.getItem('remain');
+         var timer = null;
 
          this.img_q = img_url+'question/'; 
          this.img_a = img_url+'answer/'; 
@@ -354,10 +387,9 @@
                 localStorage.setItem('answers', JSON.stringify(answers));
            };
 
-            this.countdown = function countdown( elementName, minutes, seconds )
+            var countdown = function countdown( elementName, minutes, seconds )
             {
                 var element, endTime, hours, mins, msLeft, time;
-
                 function twoDigits( n )
                 {
                     return (n <= 9 ? "0" + n : n);
@@ -389,21 +421,13 @@
                                         }
                                         else
                                         {
-                                            ons.notification.alert({
-                                                title: 'خطا',
-                                                buttonLabel:"بستن " ,
-                                                message: 'خطا در برقراری ارتباط دوباره تلاش کنید !!'
-                                            });
+                                            myNavigator.pushPage('page7.html', {data: {title: 'Page 7'}});
                                         }
                                     
                                     }, function errorCallback(response) {
                                         document.getElementById('loading').setAttribute('style','display:none;'); 
-                                        ons.notification.alert({
-                                            title: 'خطا',
-                                            buttonLabel:"بستن " ,
-                                            message: 'خطا در برقراری ارتباط دوباره تلاش کنید !!'
-                                    });
-                                    return false;
+                                        myNavigator.pushPage('page7.html', {data: {title: 'Page 7'}});
+                                        
                             });
 
                    
@@ -412,19 +436,20 @@
                         hours = time.getUTCHours();
                         mins = time.getUTCMinutes();
                         element.innerHTML = (hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
-                        setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+                        timer = setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+                       
                     }
                 }
 
                 element = document.getElementById( elementName );
                 endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
                 updateTimer();
+                
             };
-
-
-            this.countdown( "countdown", parseInt(this.remain/60), this.remain%60 );  
-
-
+         
+          countdown("countdown",parseInt(remain/60),remain%60);  
+       
+        
           this.finish = function ( address_id ) {
              ons.notification.confirm({
                     title : "پیام",
@@ -452,6 +477,7 @@
                                                         this.exam = JSON.parse(localStorage.getItem('exam'));
                                                         this.exam[0].ended = 1;
                                                         localStorage.setItem('exam',JSON.stringify(this.exam));
+                                                        clearTimeout(timer);
                                                         myNavigator.pushPage('page5.html', {data: {title: 'Page 5'}});
                                                     }
                                                     else
@@ -483,10 +509,17 @@
 .controller('FinishController', function() {
      this.logout = function(){
            localStorage.clear();
-           myNavigator.pushPage('page1.html', {data: {title: 'Page 1'}});
+           localStorage.setItem('logout','1');
+           myNavigator.pushPage('page0.html', {data: {title: 'Page 0'}});
      };
 })
 
+.controller('NoexamController', function() {
+     this.logout = function(){
+           localStorage.clear();
+           myNavigator.pushPage('page0.html', {data: {title: 'Page 0'}});
+     };
+})
 
 .controller('ErrorController', function($http,$httpParamSerializer) {
      this.logout = function(){
